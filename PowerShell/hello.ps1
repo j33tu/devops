@@ -1,1 +1,0 @@
-write-host"hello ps 1 "
