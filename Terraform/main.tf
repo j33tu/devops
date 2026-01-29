@@ -15,3 +15,9 @@ module "app_rg" {
   rg_name  = "rg-prod-applications"
   location = "East US"
 }
+module "app_rga" {
+  source = "./modules/rg"
+
+  rg_name  = "rg-dev-applications"
+  location = "East US"
+}
