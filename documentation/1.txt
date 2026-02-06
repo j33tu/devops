@@ -1,0 +1,1 @@
+s is my file and trying to check git revert file was empty before i commited 
