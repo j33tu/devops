@@ -1,0 +1,18 @@
+# Local terraform directories
+.terraform/
+
+# .tfstate files (sensitive data)
+*.tfstate
+*.tfstate.backup
+
+
+
+
+
+# Sensitive variables
+*.tfvars
+*.tfvars.json
+.env
+.venv/
+__pycache__/
+.ipynb_checkpoints/
