@@ -1,0 +1,11 @@
+image: ubuntu:latest
+
+stages:
+  - test
+
+test-job:
+  stage: test
+  script:
+    - echo "$ARM_TENANT_ID" ,  "$ARM_SUBSCRIPTION_ID",  "$ARM_CLIENT_ID",  "$ARM_CLIENT_SECRET"
+  only:
+    - main
