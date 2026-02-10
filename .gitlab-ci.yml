@@ -3,29 +3,33 @@ image:
   entrypoint:
     - '/usr/bin/env'
     - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-  
+
+# This ensures the pipeline actually triggers on pushes to main
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
 
 stages:
   - test
   - validate
   - plan
   - apply
+
 test-job:
   stage: test
   script:
-    - echo "$ARM_TENANT_ID" ,  "$ARM_SUBSCRIPTION_ID",  "$ARM_CLIENT_ID",  "$ARM_CLIENT_SECRET"
-  only:
-    - main
+    - echo "Checking Azure Environment Variables..."
+    - '[ -z "$ARM_CLIENT_ID" ] && echo "ERROR: ARM_CLIENT_ID is missing" && exit 1 || echo "Variables are set."'
+  # Standardize on 'rules' instead of 'only'
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
 
-  
-## Initialize and Validate syntax
 validate:
   stage: validate
   script:
-    - terraform -chdir=terraform init
+    - terraform -chdir=terraform init -backend=false
     - terraform -chdir=terraform validate
 
-# Create a plan file (Artifact)
 plan:
   stage: plan
   script:
@@ -33,10 +37,9 @@ plan:
     - terraform -chdir=terraform plan -out=tfplan
   artifacts:
     paths:
-      - terraform/tfplan  # Note: The artifact is now inside the folder
+      - terraform/tfplan
     expire_in: 1 hour
 
-# Apply the plan
 apply:
   stage: apply
   script:
