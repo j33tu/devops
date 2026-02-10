@@ -1,6 +1,14 @@
 provider "azurerm" {
   features {}
 }
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "compute"
+    storage_account_name = "g2tfstatestorage" # Use your actual name
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+  }
+}
 module "network_rg" {
   source = "./modules/rg"
 
