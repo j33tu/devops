@@ -1,11 +1,47 @@
-image: ubuntu:latest
+image:
+  name: hashicorp/terraform:latest
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+  
 
 stages:
   - test
-
+  - validate
+  - plan
+  - apply
 test-job:
   stage: test
   script:
     - echo "$ARM_TENANT_ID" ,  "$ARM_SUBSCRIPTION_ID",  "$ARM_CLIENT_ID",  "$ARM_CLIENT_SECRET"
   only:
     - main
+
+  
+## Initialize and Validate syntax
+validate:
+  stage: validate
+  script:
+    - terraform -chdir=terraform init
+    - terraform -chdir=terraform validate
+
+# Create a plan file (Artifact)
+plan:
+  stage: plan
+  script:
+    - terraform -chdir=terraform init
+    - terraform -chdir=terraform plan -out=tfplan
+  artifacts:
+    paths:
+      - terraform/tfplan  # Note: The artifact is now inside the folder
+    expire_in: 1 hour
+
+# Apply the plan
+apply:
+  stage: apply
+  script:
+    - terraform -chdir=terraform init
+    - terraform -chdir=terraform apply -auto-approve tfplan
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
