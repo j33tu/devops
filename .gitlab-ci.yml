@@ -27,24 +27,24 @@ test-job:
 validate:
   stage: validate
   script:
-    - terraform -chdir=terraform init -backend=false
-    - terraform -chdir=terraform validate
+    - terraform -chdir=Terraform init -backend=false
+    - terraform -chdir=Terraform validate
 
 plan:
   stage: plan
   script:
-    - terraform -chdir=terraform init
-    - terraform -chdir=terraform plan -out=tfplan
+    - terraform -chdir=Terraform init
+    - terraform -chdir=Terraform plan -out=tfplan
   artifacts:
     paths:
-      - terraform/tfplan
+      - Terraform/tfplan
     expire_in: 1 hour
 
 apply:
   stage: apply
   script:
-    - terraform -chdir=terraform init
-    - terraform -chdir=terraform apply -auto-approve tfplan
+    - terraform -chdir=Terraform init
+    - terraform -chdir=Terraform apply -auto-approve tfplan
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: manual
