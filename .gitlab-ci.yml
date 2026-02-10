@@ -1,0 +1,50 @@
+image:
+  name: hashicorp/terraform:latest
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+# This ensures the pipeline actually triggers on pushes to main
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+stages:
+  - test
+  - validate
+  - plan
+  - apply
+
+test-job:
+  stage: test
+  script:
+    - echo "Checking Azure Environment Variables..."
+    - '[ -z "$ARM_CLIENT_ID" ] && echo "ERROR: ARM_CLIENT_ID is missing" && exit 1 || echo "Variables are set."'
+  # Standardize on 'rules' instead of 'only'
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+validate:
+  stage: validate
+  script:
+    - terraform -chdir=Terraform init -backend=false
+    - terraform -chdir=Terraform validate
+
+plan:
+  stage: plan
+  script:
+    - terraform -chdir=Terraform init
+    - terraform -chdir=Terraform plan -out=tfplan
+  artifacts:
+    paths:
+      - Terraform/tfplan
+    expire_in: 1 hour
+
+apply:
+  stage: apply
+  script:
+    - terraform -chdir=Terraform init
+    - terraform -chdir=Terraform apply -auto-approve tfplan
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual

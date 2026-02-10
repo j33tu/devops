@@ -28,7 +28,7 @@ module "app_rga12" {
   location = "East US"
 }
 
-module "app_rga12" {
+module "app_rga13" {
   source = "./modules/rg"
 
   rg_name  = "rg-dev2-applications"
