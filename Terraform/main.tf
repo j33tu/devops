@@ -28,7 +28,7 @@ module "mysql_db" {
   db_name             = "app_db"
 }
 
-# 1. Firewall Rule to let the Web App reach the DB
+# 1. Firewall Rule to let the Web App reach the DB .
 # (Crucial: 0.0.0.0 is the special range that tells Azure to allow its own services)
 resource "azurerm_mysql_flexible_server_firewall_rule" "allow_azure_services" {
   name                = "AllowAzureServices"
