@@ -19,7 +19,7 @@ module "network_rg" {
 }
 module "mysql_db" {
   source              = "./modules/mysql"
-  server_name         = "g2-prod-mysql-server"
+  server_name         = "g2-prod-mysql"
   resource_group_name = "compute" # Use one created by your RG module
   location            = "eastus"
   admin_username      = "g2admin"
