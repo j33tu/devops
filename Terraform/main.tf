@@ -19,9 +19,9 @@ module "network_rg" {
 }
 module "mysql_db" {
   source              = "./modules/mysql"
-  server_name         = "g2-prd-mysql"
+  server_name         = "g2-prd-mysql-wus"
   resource_group_name = "compute" # Use one created by your RG module
-  location            = "eastus2"
+  location            = "westus3"
   admin_username      = "g2admin"
   admin_password      = var.mysql_password # Pass this from GitLab CI Secrets
   db_name             = "app_db"
