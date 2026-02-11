@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>EmailAccountDescription</key>
+            <string>Company Shared Mail</string>
+            <key>EmailAccountName</key>
+            <string>Company Name</string>
+            <key>EmailAccountType</key>
+            <string>EmailTypeIMAP</string>
+            <key>EmailAddress</key>
+            <string>admin@jitendrasingh.net</string>
+            <key>IncomingMailServerAuthentication</key>
+            <string>EmailAuthPassword</string>
+            <key>IncomingMailServerHostName</key>
+            <string>imap.gmail.com</string>
+            <key>IncomingMailServerPortNumber</key>
+            <integer>993</integer>
+            <key>IncomingMailServerUseSSL</key>
+            <true/>
+            <key>OutgoingMailServerAuthentication</key>
+            <string>EmailAuthPassword</string>
+            <key>OutgoingMailServerHostName</key>
+            <string>smtp.gmail.com</string>
+            <key>OutgoingMailServerPortNumber</key>
+            <integer>465</integer>
+            <key>OutgoingMailServerUseSSL</key>
+            <true/>
+            <key>Username</key>
+            <string>admin@jitendrasingh.net</string>
+            <key>PayloadDescription</key>
+            <string>Configures shared company email</string>
+            <key>PayloadDisplayName</key>
+            <string>Email</string>
+            <key>PayloadIdentifier</key>
+            <string>com.company.sharedmail</string>
+            <key>PayloadType</key>
+            <string>com.apple.mail.managed</string>
+            <key>PayloadUUID</key>
+            <string>76A47653-C77C-4B44-9B02-86927517A719</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+        </dict>
+    </array>
+    <key>PayloadDisplayName</key>
+    <string>Shared Email Profile</string>
+    <key>PayloadIdentifier</key>
+    <string>com.company.sharedmailprofile</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>B627F83D-4A2B-4C9D-A3D8-3F169F9B2C33</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>
