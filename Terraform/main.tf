@@ -54,3 +54,10 @@ module "app_rga15" {
   rg_name  = "rg-g212-applications"
   location = "East US"
 }
+
+module "app_rga16" {
+  source = "./modules/rg"
+
+  rg_name  = "rg-g2-vdi"
+  location = "East US"
+}
