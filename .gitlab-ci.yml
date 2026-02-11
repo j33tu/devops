@@ -47,4 +47,3 @@ apply:
     - terraform -chdir=Terraform apply -auto-approve tfplan
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
