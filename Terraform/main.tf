@@ -9,14 +9,6 @@ terraform {
     key                  = "terraform.tfstate"
   }
 }
-module "network_rg" {
-  source = "./modules/rg"
-
-  rg_name = "rg-prod-networking"
-
-
-  location = "West US"
-}
 
 module "mysql_db" {
   source              = "./modules/mysql"
