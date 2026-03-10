@@ -19,11 +19,7 @@ provider "azurerm" {
   features {}
 }
 
-# --- Variable for Database (Ensure this is in your variables.tf or secret) ---
-variable "mysql_password" {
-  type      = string
-  sensitive = true
-}
+
 
 # --- 1. Infrastructure Resource Group ---
 resource "azurerm_resource_group" "cdn_rg" {
