@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0" 
+      version = "~> 4.0"
     }
   }
 
@@ -19,8 +19,6 @@ provider "azurerm" {
   features {}
 }
 
-
-
 # --- 1. Infrastructure Resource Group ---
 resource "azurerm_resource_group" "cdn_rg" {
   name     = "rg-cricket-cdn-prod"
@@ -31,7 +29,7 @@ resource "azurerm_resource_group" "cdn_rg" {
 module "mysql_db" {
   source              = "./modules/mysql"
   server_name         = "g2-prd-mysql-wus"
-  resource_group_name = "compute" # Note: Ensure this RG exists or use azurerm_resource_group.cdn_rg.name
+  resource_group_name = "compute"
   location            = "westus3"
   admin_username      = "g2admin"
   admin_password      = var.mysql_password
@@ -45,12 +43,12 @@ resource "azurerm_storage_account" "website_storage" {
   location                 = azurerm_resource_group.cdn_rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  
+
   # Required for modern Front Door access
-  allow_nested_items_to_be_public = true 
+  allow_nested_items_to_be_public = true
 }
 
-# Separate resource for Static Website to avoid "In-place update" issues
+# Separate resource for Static Website functionality
 resource "azurerm_storage_account_static_website" "website_static" {
   storage_account_id = azurerm_storage_account.website_storage.id
   index_document     = "index.html"
@@ -80,41 +78,37 @@ resource "azurerm_cdn_frontdoor_origin_group" "og" {
   health_probe {
     interval_in_seconds = 100
     protocol            = "Https"
-    request_type        = "GET" 
+    request_type        = "GET"
   }
 }
 
-# --- 7. Origin (The "404 Killer" Configuration) ---
+# --- 7. Origin (Host Header Fix) ---
 resource "azurerm_cdn_frontdoor_origin" "storage_origin" {
   name                          = "origin-storage"
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.og.id
-  
-  # Points to stparakramwebprod.z1.web.core.windows.net
-  host_name                     = azurerm_storage_account.website_storage.primary_web_host
-  
-  # MANDATORY: Tells Storage Account which site we are looking for
-  origin_host_header            = azurerm_storage_account.website_storage.primary_web_host
-  
+
+  host_name          = azurerm_storage_account.website_storage.primary_web_host
+  origin_host_header = azurerm_storage_account.website_storage.primary_web_host
+
   certificate_name_check_enabled = true
   enabled                        = true
 }
 
-# --- 8. Route (Mapping Endpoint to Origin) ---
+# --- 8. Route (Final Fixed Mapping) ---
 resource "azurerm_cdn_frontdoor_route" "route" {
   name                          = "default-route"
   cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.endpoint.id
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.og.id
   cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.storage_origin.id]
-  
-  supported_protocols           = ["Http", "Https"]
-  patterns_to_match             = ["/*"]
-  forwarding_protocol           = "HttpsOnly"
+
+  supported_protocols = ["Http", "Https"]
+  patterns_to_match   = ["/*"]
+  forwarding_protocol = "HttpsOnly"
 
   cache {
     query_string_caching_behavior = "IgnoreQueryString"
     compression_enabled           = true
 
-    # Full list to ensure broad support for your blog assets
     content_types_to_compress = [
       "application/eot",
       "application/font",
@@ -126,4 +120,16 @@ resource "azurerm_cdn_frontdoor_route" "route" {
       "application/pkcs7-mime",
       "application/truetype",
       "application/ttf",
-      "application/
+      "application/vnd.ms-fontobject",
+      "application/xhtml+xml",
+      "application/xml",
+      "text/css",
+      "text/csv",
+      "text/html",
+      "text/javascript",
+      "text/js",
+      "text/plain",
+      "text/xml"
+    ]
+  }
+}
