@@ -63,8 +63,8 @@ module "aks" {
   dns_prefix          = "g2k8s"
   default_node_pool = {
     name       = "default"
-    node_count = 2
-    vm_size    = "standard_b16als_v2"
+    node_count = 1
+    vm_size    = "Standard_B2s"
   }
   identity = "SystemAssigned"
 }
