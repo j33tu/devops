@@ -73,7 +73,7 @@ module "aks" {
 }
 
 resource "azurerm_role_assignment" "aks_to_acr" {
-  # We reference the module name, then the output name defined above
+  # We reference the module name, then the output name defined aboved
   principal_id = module.aks.kubelet_identity_id
   scope        = module.acr.acr_id
 
