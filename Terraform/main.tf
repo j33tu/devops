@@ -58,8 +58,8 @@ module "acr" {
 module "aks" {
   source              = "./modules/aks"
   name                = "g2k8s_Cluster"
-  location            = resource_group.k8srg.location
-  resource_group_name = resource_group.k8srg.name
+  location            = azurerm_resource_group.k8srg.location
+  resource_group_name = azurerm_resource_group.k8srg.name
   dns_prefix          = "g2k8s"
   default_node_pool = {
     name       = "default"
