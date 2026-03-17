@@ -53,7 +53,7 @@ module "acr" {
 }
 
 
-# deploy aks cluster 
+# deploy aks cluster in one
 
 module "aks" {
   source              = "./modules/aks"
