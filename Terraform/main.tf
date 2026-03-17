@@ -39,15 +39,15 @@ module "mysql_db" {
 
 # deploy resource group for k8s cluster
 
-resource "azurerm_resource_group" "rg" {
+resource "azurerm_resource_group" "k8srg" {
   name     = "k8s-rg"
   location = "westus2"
 }
 module "acr" {
   source              = "./modules/acr"
   name                = "g2acr" # Must be globally unique
-  resource_group_name = "k8s-rg"
-  location            = "westus2"
+  resource_group_name = azurerm_resource_group.k8srg.name
+  location            = azurerm_resource_group.k8srg.location
   sku                 = "Basic"
   admin_enabled       = true
 }
@@ -58,8 +58,8 @@ module "acr" {
 module "aks" {
   source              = "./modules/aks"
   name                = "g2k8s_Cluster"
-  location            = "westus2"
-  resource_group_name = "k8s-rg"
+  location            = resource_group.k8srg.location
+  resource_group_name = resource_group.k8srg.name
   dns_prefix          = "g2k8s"
   default_node_pool = {
     name       = "default"
