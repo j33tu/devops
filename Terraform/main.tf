@@ -64,7 +64,10 @@ module "aks" {
   default_node_pool = {
     name       = "default"
     node_count = 1
-    vm_size    = "Standard_B2s_v2"
+    vm_size    = "Standard_D2s_v3"
+    upgrade_settings = {
+      max_surge = "10%"
+    }
   }
   identity = "SystemAssigned"
 }
