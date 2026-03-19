@@ -16,7 +16,13 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      # This allows Terraform to delete the RG even if it contains 
+      # "rogue" resources like those Prometheus rules.
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 }
 
 # --- 1. Infrastructure Resource Group ---
