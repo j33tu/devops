@@ -43,3 +43,11 @@ module "mysql_db" {
 }
 
 
+resource "azurerm_resource_group" "this" {
+  # for each for resource groups 
+  for_each = var.resource_groups
+  name     = each.value.name
+  location = each.value.location
+  tags     = each.value.tags
+}
+
