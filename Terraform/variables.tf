@@ -28,6 +28,11 @@ variable "resource_groups" {
       name     = "rg-mgmt-monitoring"
       location = "East US"
       tags     = { "App" = "LogAnalytics" }
+    },
+    "data" = {
+      name     = "rg-data-prod"
+      location = "westus3"
+      tags     = { "Department" = "Data", "Criticality" = "High" }
     }
   }
 }
