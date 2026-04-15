@@ -41,7 +41,7 @@ plan:
   stage: plan
   script:
     - terraform -chdir=$CLOUD_PATH init
-    - terraform -chdir=$CLOUD_PATH plan -out=tfplan
+    - terraform -chdir=$CLOUD_PATH plan -out=tfplan -refresh=false
   artifacts:
     # Captures the plan file from the correct subfolder
     paths:
