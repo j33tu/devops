@@ -2,7 +2,7 @@ image:
   name: hashicorp/terraform:latest
   entrypoint:
     - '/usr/bin/env'
-    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    - 'PATH=/usr/local/sbin=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 workflow:
   rules:
@@ -14,24 +14,22 @@ stages:
   - apply
 
 # ----------------------------------------------------------------------
-# Reusable Template for Matrix execution
+# Define the Matrix for both Cloud folders
 # ----------------------------------------------------------------------
 .tf_matrix:
   parallel:
     matrix:
-      - CLOUD_DIR: ["azure", "aws"]
-  before_script:
-    - cd $CLOUD_DIR
+      - CLOUD_PATH: ["terraform/azure", "terraform/aws"]
 
 # ----------------------------------------------------------------------
-# Validation Stage
+# Validate Stage
 # ----------------------------------------------------------------------
 validate:
   extends: .tf_matrix
   stage: validate
   script:
-    - terraform init -backend=false
-    - terraform validate
+    - terraform -chdir=$CLOUD_PATH init -backend=false
+    - terraform -chdir=$CLOUD_PATH validate
 
 # ----------------------------------------------------------------------
 # Plan Stage
@@ -40,12 +38,12 @@ plan:
   extends: .tf_matrix
   stage: plan
   script:
-    - terraform init
-    - terraform plan -out=tfplan
+    - terraform -chdir=$CLOUD_PATH init
+    - terraform -chdir=$CLOUD_PATH plan -out=tfplan
   artifacts:
-    # Saves the plan inside the specific folder to prevent conflicts
+    # Stores the plan for the specific cloud to pass to the apply stage
     paths:
-      - "*/tfplan"
+      - "$CLOUD_PATH/tfplan"
     expire_in: 1 hour
 
 # ----------------------------------------------------------------------
@@ -55,10 +53,10 @@ apply:
   extends: .tf_matrix
   stage: apply
   script:
-    - terraform init
-    - terraform apply -auto-approve tfplan
+    - terraform -chdir=$CLOUD_PATH init
+    - terraform -chdir=$CLOUD_PATH apply -auto-approve tfplan
   dependencies:
     - plan
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
-      when: manual  # Manual gate to prevent accidental costs in two clouds
+      when: manual # Safety gate: Allows you to trigger Azure and AWS independently
