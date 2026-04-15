@@ -4,7 +4,7 @@ image:
     - '/usr/bin/env'
     - 'PATH=/usr/local/sbin=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-# Ensures the pipeline runs only on the main branch
+# Pipeline runs only on the main branch
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
@@ -15,13 +15,20 @@ stages:
   - apply
 
 # ----------------------------------------------------------------------
-# Logic for Matrix execution across your specific subfolders
+# Logic for Matrix execution with Path Filtering
 # ----------------------------------------------------------------------
 .tf_matrix:
   parallel:
     matrix:
-      # These must match your Git folder casing EXACTLY
       - CLOUD_PATH: ["Terraform/Azure", "Terraform/Aws"]
+  rules:
+    # AUTOMATIC: Only trigger jobs if changes exist in the specific folder
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - $CLOUD_PATH/**/*
+      when: on_success
+    # Do nothing if no changes are detected in the path
+    - when: never
 
 # ----------------------------------------------------------------------
 # Validation Stage
@@ -41,15 +48,14 @@ plan:
   stage: plan
   script:
     - terraform -chdir=$CLOUD_PATH init
-    - terraform -chdir=$CLOUD_PATH plan -out=tfplan -refresh=false
+    - terraform -chdir=$CLOUD_PATH plan -out=tfplan
   artifacts:
-    # Captures the plan file from the correct subfolder
     paths:
       - "$CLOUD_PATH/tfplan"
     expire_in: 1 hour
 
 # ----------------------------------------------------------------------
-# Apply Stage
+# Apply Stage (Fully Automated)
 # ----------------------------------------------------------------------
 apply:
   extends: .tf_matrix
@@ -59,6 +65,3 @@ apply:
     - terraform -chdir=$CLOUD_PATH apply -auto-approve tfplan
   dependencies:
     - plan
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: manual # Requires a manual 'Play' click in GitLab for safety
