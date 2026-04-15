@@ -4,6 +4,7 @@ image:
     - '/usr/bin/env'
     - 'PATH=/usr/local/sbin=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
+# Ensures the pipeline runs only on the main branch
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
@@ -14,15 +15,16 @@ stages:
   - apply
 
 # ----------------------------------------------------------------------
-# Define the Matrix for both Cloud folders
+# Logic for Matrix execution across your specific subfolders
 # ----------------------------------------------------------------------
 .tf_matrix:
   parallel:
     matrix:
-      - CLOUD_PATH: ["terraform/azure", "terraform/aws"]
+      # These must match your Git folder casing EXACTLY
+      - CLOUD_PATH: ["Terraform/Azure", "Terraform/Aws"]
 
 # ----------------------------------------------------------------------
-# Validate Stage
+# Validation Stage
 # ----------------------------------------------------------------------
 validate:
   extends: .tf_matrix
@@ -41,7 +43,7 @@ plan:
     - terraform -chdir=$CLOUD_PATH init
     - terraform -chdir=$CLOUD_PATH plan -out=tfplan
   artifacts:
-    # Stores the plan for the specific cloud to pass to the apply stage
+    # Captures the plan file from the correct subfolder
     paths:
       - "$CLOUD_PATH/tfplan"
     expire_in: 1 hour
@@ -59,4 +61,4 @@ apply:
     - plan
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
-      when: manual # Safety gate: Allows you to trigger Azure and AWS independently
+      when: manual # Requires a manual 'Play' click in GitLab for safety
