@@ -4,46 +4,61 @@ image:
     - '/usr/bin/env'
     - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-# This ensures the pipeline actually triggers on pushes to main
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
 
 stages:
-  - test
   - validate
   - plan
   - apply
 
-test-job:
-  stage: test
-  script:
-    - echo "Checking Azure Environment Variables..."
-    - '[ -z "$ARM_CLIENT_ID" ] && echo "ERROR: ARM_CLIENT_ID is missing" && exit 1 || echo "Variables are set."'
-  # Standardize on 'rules' instead of 'only'
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+# ----------------------------------------------------------------------
+# Reusable Template for Matrix execution
+# ----------------------------------------------------------------------
+.tf_matrix:
+  parallel:
+    matrix:
+      - CLOUD_DIR: ["azure", "aws"]
+  before_script:
+    - cd $CLOUD_DIR
 
+# ----------------------------------------------------------------------
+# Validation Stage
+# ----------------------------------------------------------------------
 validate:
+  extends: .tf_matrix
   stage: validate
   script:
-    - terraform -chdir=Terraform init -backend=false
-    - terraform -chdir=Terraform validate
+    - terraform init -backend=false
+    - terraform validate
 
+# ----------------------------------------------------------------------
+# Plan Stage
+# ----------------------------------------------------------------------
 plan:
+  extends: .tf_matrix
   stage: plan
   script:
-    - terraform -chdir=Terraform init
-    - terraform -chdir=Terraform plan -out=tfplan -refresh=false
+    - terraform init
+    - terraform plan -out=tfplan
   artifacts:
+    # Saves the plan inside the specific folder to prevent conflicts
     paths:
-      - Terraform/tfplan
+      - "*/tfplan"
     expire_in: 1 hour
 
+# ----------------------------------------------------------------------
+# Apply Stage
+# ----------------------------------------------------------------------
 apply:
+  extends: .tf_matrix
   stage: apply
   script:
-    - terraform -chdir=Terraform init
-    - terraform -chdir=Terraform apply -auto-approve tfplan
+    - terraform init
+    - terraform apply -auto-approve tfplan
+  dependencies:
+    - plan
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      when: manual  # Manual gate to prevent accidental costs in two clouds
