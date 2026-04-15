@@ -1,0 +1,1 @@
+Write-Host("Starting RDP port test script...") -ForegroundColor Green

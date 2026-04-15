@@ -1,0 +1,19 @@
+function start-lservice {
+                [cmdletbindings(supportshouldpass)]
+param(
+[parameter(mendatory=$true,pipelinevariable=$true)])
+[string]$sirname
+
+begin
+{
+write-host "starting service checks"
+process {
+if($pscmdlet.shouldprocess("getting service check done"))
+{
+start-service -name $sirname
+}}
+
+}
+end{
+write-host "process completed "}
+}

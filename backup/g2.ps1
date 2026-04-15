@@ -1,0 +1,1 @@
+write-verbose("Starting RDP port test script...") 
