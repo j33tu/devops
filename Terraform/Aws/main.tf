@@ -1,13 +1,16 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
+module "s3bucketstage" {
+  source             = "./modules/s3-bucket"
+  bucket_name_prefix = "stage"
+  s3bucketname       = "g2bucket"
+  location           = "ap-south-1"
+
 }
-provider "aws" {
-  region = "ap-south-2"
+module "s3bucketprod" {
+  source             = "./modules/s3-bucket"
+  bucket_name_prefix = "prod"
+  s3bucketname       = "g2bucket"
+  location           = "ap-south-1"
+
 }
 
 
