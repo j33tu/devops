@@ -9,3 +9,10 @@ terraform {
 provider "aws" {
   region = "ap-south-2"
 }
+terraform {
+  backend "s3" {
+    bucket = "g2terraformbucket"
+    key    = "awsinfra/terraform.tfstate"
+    region = "ap-south-2"
+  }
+}
