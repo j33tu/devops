@@ -22,7 +22,7 @@ module "s3bucket1" {
   location           = "ap-south-1"
   s3bucketname       = "g2s3bucket1"
 }
-module "s3bucket1" {
+module "s3bucket2" {
   source             = "./modules/s3-bucket"
   bucket_name_prefix = "stg"
   location           = "ap-south-1"
