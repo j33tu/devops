@@ -1,0 +1,50 @@
+{
+    "location": "centralindia",
+    "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+            "/subscriptions/11d701d8-f4aa-4e6a-810b-c4dc3ad3940f/resourceGroups/compute/providers/Microsoft.ManagedIdentity/userAssignedIdentities/g2umidentity": {}
+        }
+    },
+    "properties": {
+        "buildTimeoutInMinutes": 120,
+        "vmProfile": {
+            "vmSize": "Standard_D4s_v3",
+            "osDiskSizeGB": 127
+        },
+        "source": {
+            "type": "PlatformImage",
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-11",
+            "sku": "win11-23h2-avd",
+            "version": "latest"
+        },
+        "customize": [
+            {
+                "type": "PowerShell",
+                "name": "InstallChrome",
+                "scriptUri": "https://g2sibackupsa.blob.core.windows.net/scripts/install-chrome.ps1"
+            },
+            {
+                "type": "PowerShell",
+                "name": "InstallZoom",
+                "scriptUri": "https://g2sibackupsa.blob.core.windows.net/scripts/install-zoom.ps1"
+            },
+            {
+                "type": "WindowsUpdate",
+                "searchCriteria": "IsInstalled=0",
+                "updateLimit": 40
+            }
+        ],
+        "distribute": [
+            {
+                "type": "SharedImage",
+                "galleryImageId": "/subscriptions/11d701d8-f4aa-4e6a-810b-c4dc3ad3940f/resourceGroups/rg-image-factory/providers/Microsoft.Compute/galleries/myGallery/images/win-golden",
+                "runOutputName": "AVD-Output-01",
+                "replicationRegions": [
+                    "centralindia"
+                ]
+            }
+        ]
+    }
+}
