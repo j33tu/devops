@@ -47,3 +47,5 @@ function show-highwaydetails {
         write-host  'All highway details are displayed'
     }
 }
+
+show-highwaydetails
