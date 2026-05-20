@@ -1,0 +1,19 @@
+image: node:alpine
+stages:
+  - deploy to stage
+  - deploy to production
+
+deploy to stage server:
+  stage: deploy to stage
+  image: ubuntu:latest
+  before_script:
+    - sudo apt update
+  script:
+    - cp \tmp\*.* to \usr\*.*
+  only:
+    - main
+deploy to prod server:
+  stage: deploy to production
+  image: ubuntu:latest
+  before_script:
+    - sudo apt get update all
